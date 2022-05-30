@@ -2,39 +2,50 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-signin-client_id" content="374767743519-h4du4gkhivmltj0ho79ijdfeom4lh1ug.apps.googleusercontent.com">
-    <title>FETUp</title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    <title>Home</title>
 </head>
 
 <body>
-    <h1>FET Up!</h1>
-    <div id="my-signin2"></div>
-    <script>
-        function onSuccess(googleUser) {
-            console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
-        }
-        function onFailure(error) {
-            console.log(error);
-        }
-        function renderButton() {
-            gapi.signin2.render('my-signin2', {
-                'scope': 'profile email',
-                'width': 240,
-                'height': 50,
-                'longtitle': true,
-                'theme': 'dark',
-                'ux_mode': 'redirect',
-                'redirect_uri': 'https://kairuler.github.io/FETup/about.html',
-                'onsuccess': onSuccess,
-                'onfailure': onFailure
-            });
-        }
-    </script>
+    <div class="header">
+        <p id="logo"><a href="index.html">FETup</a></p>
+        <div id="empty"></div>
+        <div id="options">
+            <a href="#home" class="link">Home</a>
+            <a href="#home" class="link">Find FET</a>
+            <a href="#home" class="link">Profile</a>
+            <a href="#home" class="link">ABOUT</a>
+        </div>
+    </div>
 
-    <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+    <div class="introduction">
+        <div class="introductionbox">
+            <p id="intro-big-text"><strong>WELCOME</strong></p>
+            <p id="introtext">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde expedita minus sint architecto officia
+                animi,
+                quas alias corrupti? Distinctio voluptatem possimus vero ipsa et veritatis porro similique sunt hic qui!
+            </p>
+            <div id="signup-button">
+                <button type="button" onclick="alert('The Setup will be done soon')">
+                    Set Up
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>FETup. There for you.</p>
+    </footer>
 </body>
 
 </html>
