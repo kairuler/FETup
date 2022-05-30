@@ -76,7 +76,7 @@ footer,
 
 #logo a {
     color: grey;
-    font-size: 30px;
+    font-size: 20px;
     text-decoration: none;
 }
 
@@ -106,7 +106,7 @@ footer,
     border: 1px solid white;
     color: white;
     padding: 1em 5em;
-    margin: 20px;
+    margin-top: 5%;
     
     text-align: center;
     text-decoration: none;
