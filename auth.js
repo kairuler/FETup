@@ -35,16 +35,117 @@ const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 const database = getDatabase(app)
 
+const register = async () => {
+  // Get input
+  const full_name = document.getElementById("regname").value
+  const email = document.getElementById("regemail").value
+  const password = document.getElementById("regpw").value
+
+  // Authentication
+  createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Signed in
+      const user = userCredential.user
+      // Save data into real time database
+      // Key: user id (uid). Values: full_name, email
+      set(ref(database, "users/" + user.uid), {
+        full_name: full_name,
+        email: email,
+      })
+        .then(() => {
+          // Data saved successfully!
+          alert("User created successfully")
+          window.location = "/index.html"
+        })
+        .catch((error) => {
+          alert(error)
+        })
+    })
+    .catch((error) => {
+      alert(error.code)
+    })
+}
+
+const login = async () => {
+  // Get input
+  const email = document.getElementById("loginemail").value
+  const password = document.getElementById("loginpw").value
+
+  signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Signed in
+      const user = userCredential.user
+      // save log in details into real time database
+      var lgDate = new Date()
+      update(ref(database, "users/" + user.uid), {
+        last_login: lgDate,
+      })
+        .then(() => {
+          // Data saved successfully!
+          alert("user logged in successfully")
+          window.location = "/index.html"
+        })
+        .catch((error) => {
+          // The write failed...
+          alert(error)
+        })
+    })
+    .catch((error) => {
+      alert(error.Code)
+    })
+}
+
+const logout = async () => {
+  if (auth.currentUser) {
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+        alert("user logged out successfully")
+      })
+      .catch((error) => {
+        alert(error.Code)
+      })
+  } else {
+    alert("no user logged in currently")
+  }
+}
+
+/* Call Auth functions based on current page */
+
+if (document.getElementById('home-page')) {
+  console.log("home page")
+  logoutcont.addEventListener("click", logout)
+}
+if (document.getElementById('login-page')) {
+  console.log("login page")
+  logincont.addEventListener("click", login)
+  registercont.addEventListener("click", register)
+  /*
+  onAuthStateChanged(auth, (user) => {
+    if (user) { 
+      window.location = "/index.html"
+    }
+  })
+  */
+}
+
+/*
 onAuthStateChanged(auth, (user) => {
   if (user) {
+    console.log("auth state changed")
     // User is signed in, see docs for a list of available properties
     // https://firebase.google.com/docs/reference/js/firebase.User
-    const uid = user.uid
-    const displayName = user.displayName
-    const email = user.email
-    // ...
-  } else {
-    // User is signed out
-    // ...
+    if (auth.currentUser.emailVerified == false) {
+      sendEmailVerification(auth.currentUser)
+        .then(() => {
+          // Email verification sent!
+          // ...
+          alert("Verification email sent successfully")
+        })
+        .catch((error) => {
+          alert(error.Code)
+        })
+    }
   }
 })
+*/

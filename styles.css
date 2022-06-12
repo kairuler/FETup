@@ -60,10 +60,17 @@ footer,
     transition: width 0.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-.link.logout-btn {
+.logout-btn {
     padding: 0.5em 1em;
+    color: black;
+    font-size: 15px;
+    text-decoration: none;
+    position: relative;
+    width: max-content;
     border: 1px solid;
     border-radius: 10px;
+    margin-left: 1em;
+    cursor: pointer;
 }
 
 @media (hover: hover) and (pointer: fine) {
