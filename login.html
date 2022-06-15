@@ -1,121 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
     <title>Login</title>
-  </head>
+</head>
 
-  <body id="login-page">
+<body id="login-page">
     <div class="loginpage">
-      <button
-        onclick="document.getElementById('id01').style.display='block'"
-        style="width: auto"
-      >
-        Login
-      </button>
+        <button onclick="document.getElementById('id01').style.display='block'" style="width: auto">
+            Login
+        </button>
 
-      <div id="id01" class="modal">
-        <div class="modal-content animate">
-          <div class="imgcontainer">
-            <span
-              onclick="document.getElementById('id01').style.display='none'"
-              class="close"
-              title="Close Modal"
-              >&times;</span
-            >
-            <h1>Login</h1>
-          </div>
-          <div class="container">
-            <input
-              type="text"
-              placeholder="NUS e-mail"
-              name="e-mail"
-              id="loginemail"
-              required
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              name="psw"
-              id="loginpw"
-              required
-            />
-            <button type="submit" id="logincont">Next</button>
-          </div>
+        <div id="id01" class="modal">
+            <div class="modal-content animate">
+                <div class="imgcontainer">
+                    <span onclick="document.getElementById('id01').style.display='none'" class="close"
+                        title="Close Modal">&times;</span>
+                    <h1>Login</h1>
+                </div>
+                <div class="container">
+                    <input type="text" placeholder="NUS e-mail" name="e-mail" id="loginemail" required />
+                    <input type="password" placeholder="Password" name="psw" id="loginpw" required />
+                    <button type="submit" id="loginbtn">Next</button>
+                </div>
+            </div>
         </div>
-      </div>
 
-      <button
-        onclick="document.getElementById('id02').style.display='block'"
-        style="width: auto"
-      >
-        Register
-      </button>
+        <button onclick="document.getElementById('id02').style.display='block'" style="width: auto">
+            Register
+        </button>
 
-      <div id="id02" class="modal">
-        <div class="modal-content animate">
-          <div class="imgcontainer">
-            <span
-              onclick="document.getElementById('id02').style.display='none'"
-              class="close"
-              title="Close Modal"
-              >&times;</span
-            >
-            <h1>Register</h1>
-          </div>
-          <div class="container">
-            <input
-              type="text"
-              placeholder="Full Name"
-              name="name"
-              id="regname"
-              required
-            />
-            <input
-              type="text"
-              placeholder="NUS e-mail"
-              name="e-mail"
-              id="regemail"
-              required
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              name="psw"
-              id="regpw"
-              required
-            />
-            <button type="submit" id="registercont">Register</button>
-          </div>
+        <div id="id02" class="modal">
+            <div class="modal-content animate">
+                <div class="imgcontainer">
+                    <span onclick="document.getElementById('id02').style.display='none'" class="close"
+                        title="Close Modal">&times;</span>
+                    <h1>Register</h1>
+                </div>
+                <div class="container">
+                    <input type="text" placeholder="Full Name" name="name" id="regname" required />
+                    <input type="text" placeholder="NUS e-mail" name="e-mail" id="regemail" required />
+                    <input type="password" placeholder="Password" name="psw" id="regpw" required />
+                    <button type="submit" id="registerbtn">Register</button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 
     <script>
-      // Get the modal
-      var loginmodal = document.getElementById("id01")
-      var registermodal = document.getElementById("id02")
+        // Get the modal
+        var loginmodal = document.getElementById("id01")
+        var registermodal = document.getElementById("id02")
 
-      // When the user clicks anywhere outside of the modal, close it
-      window.onclick = function (event) {
-        if (event.target == loginmodal) {
-          loginmodal.style.display = "none"
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == loginmodal) {
+                loginmodal.style.display = "none"
+            }
+            if (event.target == registermodal) {
+                registermodal.style.display = "none"
+            }
         }
-        if (event.target == registermodal) {
-          registermodal.style.display = "none"
-        }
-      }
     </script>
 
     <script src="auth.js" type="module"></script>
-  </body>
+</body>
+
 </html>

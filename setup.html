@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Set Up</title>
+</head>
+
+<body id="setup-page">
+    <div class="header">
+        <p id="logo"><a href="index.html">FETup</a></p>
+        <div id="empty"></div>
+        <div id="options">
+            <a href="#home" class="link">Home</a>
+            <a href="#home" class="link">Find FET</a>
+            <a href="#home" class="link">Profile</a>
+            <a href="#home" class="link">About</a>
+            <a id="logoutbtn" class="logout-btn"">Sign Out</a>
+        </div>
+    </div>
+
+    <div class="setup">
+        <div class="step">
+            <h2>Step 1</h2>
+            <div class="step-content">
+                <p>Verify your status as an NUS student by clicking the verification link in your NUS email. 
+                    (Check your spam inbox if required)</p>
+                <button id="verifybtn">Send email</button>
+            </div>
+        </div>
+        <div class="step">
+            <h2>Step 2</h2>
+            <div class="step-content">
+                <p>Link your google account to authorise FETUp to write reminders to your Google Calendar.</p>
+                <button id="registerGooglebtn">Sign in with Google</button>
+            </div>
+        </div>
+        <div class="step">
+            <h2>Step 3</h2>
+            <div class="step-content">
+                <p>I wish to be reminded ___ of days before class.</p>
+                <button>Finish!</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Copyright © inc sst 2022</p>
+        <a href="/privacy-policy.pdf" target="_blank">Privacy policy</a>
+    </footer>
+
+    <script src="auth.js" type="module"></script>
+</body>
+
+</html>
+
+</html>

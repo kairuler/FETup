@@ -1,5 +1,5 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.4.0/firebase-app.js"
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.3/firebase-app.js"
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 import {
@@ -8,13 +8,17 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
-} from "https://www.gstatic.com/firebasejs/9.4.0/firebase-auth.js"
+  sendEmailVerification,
+  GoogleAuthProvider,
+  signInWithRedirect,
+} from "https://www.gstatic.com/firebasejs/9.8.3/firebase-auth.js"
 import {
   getDatabase,
   set,
   ref,
+  onValue,
   update,
-} from "https://www.gstatic.com/firebasejs/9.4.0/firebase-database.js"
+} from "https://www.gstatic.com/firebasejs/9.8.3/firebase-database.js"
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -30,10 +34,18 @@ const firebaseConfig = {
   measurementId: "G-G1SH00HCGX",
 }
 
-// Initialize Firebase
+// Firebase' initialisations - config, auth, database
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 const database = getDatabase(app)
+
+// Google auth provider + OAuth 2.0 scopes
+const provider = new GoogleAuthProvider()
+provider.addScope('https://www.googleapis.com/auth/calendar')
+provider.addScope('https://www.googleapis.com/auth/calendar.events')
+provider.addScope('https://www.googleapis.com/auth/calendar.events.readonly')
+provider.addScope('https://www.googleapis.com/auth/calendar.readonly')
+provider.addScope('https://www.googleapis.com/auth/calendar.settings.readonly')
 
 const register = async () => {
   // Get input
@@ -44,7 +56,6 @@ const register = async () => {
   // Authentication
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
-      // Signed in
       const user = userCredential.user
       // Save data into real time database
       // Key: user id (uid). Values: full_name, email
@@ -55,7 +66,7 @@ const register = async () => {
         .then(() => {
           // Data saved successfully!
           alert("User created successfully")
-          window.location = "/index.html"
+          window.location = "/setup.html"
         })
         .catch((error) => {
           alert(error)
@@ -82,11 +93,9 @@ const login = async () => {
       })
         .then(() => {
           // Data saved successfully!
-          alert("user logged in successfully")
-          window.location = "/index.html"
+          window.location = "/setup.html"
         })
         .catch((error) => {
-          // The write failed...
           alert(error)
         })
     })
@@ -110,42 +119,78 @@ const logout = async () => {
   }
 }
 
-/* Call Auth functions based on current page */
-
-if (document.getElementById('home-page')) {
-  console.log("home page")
-  logoutcont.addEventListener("click", logout)
-}
-if (document.getElementById('login-page')) {
-  console.log("login page")
-  logincont.addEventListener("click", login)
-  registercont.addEventListener("click", register)
-  /*
-  onAuthStateChanged(auth, (user) => {
-    if (user) { 
-      window.location = "/index.html"
-    }
-  })
-  */
-}
-
-/*
-onAuthStateChanged(auth, (user) => {
+const verifyemail = async () => {
+  const user = auth.currentUser
   if (user) {
-    console.log("auth state changed")
-    // User is signed in, see docs for a list of available properties
-    // https://firebase.google.com/docs/reference/js/firebase.User
-    if (auth.currentUser.emailVerified == false) {
-      sendEmailVerification(auth.currentUser)
+    if (user.emailVerified) {
+      alert("Email is already verified")
+    } else {
+      console.log("email is NOT verified")
+      sendEmailVerification(user)
         .then(() => {
           // Email verification sent!
-          // ...
-          alert("Verification email sent successfully")
+          alert("Verification email sent")
         })
         .catch((error) => {
           alert(error.Code)
         })
     }
+  } else {
+    alert("no user logged in currently")
   }
-})
-*/
+}
+
+const registerGoogle = async () => {
+  const user = auth.currentUser
+  if (user) {
+    signInWithRedirect(auth, provider)
+    getRedirectResult(auth)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result)
+        const token = credential.accessToken
+        // The signed-in user info.
+        const user = result.user
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code
+        const errorMessage = error.message
+        const email = error.customData.email // The email of the user's account used.
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error)
+        alert(
+          credential + "\n" + email + "\n" + errorCode + ": " + errorMessage
+        )
+      })
+  } else {
+    alert("Log in required")
+  }
+}
+
+// Call Auth functions based on current page 
+if (document.getElementById('home-page')) {
+  logoutbtn.addEventListener("click", logout)
+
+  // Welcome message with User's name
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+        const userId = user.uid;
+        return onValue(ref(database, '/users/' + userId), (snapshot) => {
+        const full_name = (snapshot.val() && snapshot.val().full_name) || 'Anonymous';
+        document.getElementById("intro-big-text").textContent="WELCOME, " + full_name + "!"
+        }, {
+        onlyOnce: true
+        })
+    }
+  })
+}
+if (document.getElementById('login-page')) {
+  loginbtn.addEventListener("click", login)
+  registerbtn.addEventListener("click", register)
+}
+if (document.getElementById('setup-page')) {
+    logoutbtn.addEventListener("click", logout)
+    verifybtn.addEventListener("click", verifyemail)
+    registerGooglebtn.addEventListener("click", registerGoogle)
+}
