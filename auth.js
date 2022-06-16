@@ -47,6 +47,15 @@ provider.addScope('https://www.googleapis.com/auth/calendar.events.readonly')
 provider.addScope('https://www.googleapis.com/auth/calendar.readonly')
 provider.addScope('https://www.googleapis.com/auth/calendar.settings.readonly')
 
+const loginRedirect = async () => {
+  const user = auth.currentUser
+  if (user) {
+    location.href = "/setup.html"
+  } else {
+    location.href = "/login.html"
+  }
+}
+
 const register = async () => {
   // Get input
   const full_name = document.getElementById("regname").value
@@ -168,9 +177,21 @@ const registerGoogle = async () => {
   }
 }
 
+function dropdown() {
+    function one() { document.getElementById('dropbtn').textContent = '1' }
+    function two() { document.getElementById('dropbtn').textContent = '2' }
+    function three() { document.getElementById('dropbtn').textContent = '3' }
+    function four() { document.getElementById('dropbtn').textContent = '4' }
+    option_1.addEventListener("click", one)
+    option_2.addEventListener("click", two)
+    option_3.addEventListener("click", three)
+    option_4.addEventListener("click", four)
+}
+
 // Call Auth functions based on current page 
 if (document.getElementById('home-page')) {
   logoutbtn.addEventListener("click", logout)
+  setupbtn.addEventListener("click", loginRedirect)
 
   // Welcome message with User's name
   onAuthStateChanged(auth, (user) => {
@@ -193,4 +214,7 @@ if (document.getElementById('setup-page')) {
     logoutbtn.addEventListener("click", logout)
     verifybtn.addEventListener("click", verifyemail)
     registerGooglebtn.addEventListener("click", registerGoogle)
+    dropdown()
 }
+
+
