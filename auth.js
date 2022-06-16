@@ -66,7 +66,7 @@ const register = async () => {
         .then(() => {
           // Data saved successfully!
           alert("User created successfully")
-          window.location = "/setup.html"
+          location.href = "/setup.html"
         })
         .catch((error) => {
           alert(error)
@@ -93,7 +93,7 @@ const login = async () => {
       })
         .then(() => {
           // Data saved successfully!
-          window.location = "/setup.html"
+          location.href = "/setup.html"
         })
         .catch((error) => {
           alert(error)
