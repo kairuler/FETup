@@ -147,35 +147,46 @@ const verifyemail = async () => {
 }
 
 // Google API integration
-function initClient() {
-    const client = google.accounts.oauth2.initTokenClient({
-        client_id: '374767743519-h4du4gkhivmltj0ho79ijdfeom4lh1ug.apps.googleusercontent.com',
-        scope: 'https://www.googleapis.com/auth/calendar.events.readonly',
-        callback: (response) => {
-          console.log("Encoded JWT ID token: " + response.credential)
-        },
-    });
+const CLIENT_ID = "374767743519-h4du4gkhivmltj0ho79ijdfeom4lh1ug.apps.googleusercontent.com"
+const API_KEY = "AIzaSyCOWAZ2lwY3DHoBntVJPKAYoRAlW9-s75E"
+const DISCOVERY_DOC = "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"
+const SCOPES = "https://www.googleapis.com/auth/calendar.events.readonly"; //multiple scopes can be included, separated by spaces.
 
-
-    /*
-    gapi.load("client:auth2", () => {
+function initGapiClient() {
+    //gapi.load("client:auth2", () => {
+    gapi.load("client", () => {   
         console.log("loaded client")
-
         gapi.client.init({
-        apiKey: "AIzaSyCOWAZ2lwY3DHoBntVJPKAYoRAlW9-s75E",
-        clientId: "374767743519-h4du4gkhivmltj0ho79ijdfeom4lh1ug.apps.googleusercontent.com",
-        discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
-        scope: "https://www.googleapis.com/auth/calendar.events.readonly",
+          apiKey: API_KEY,
+          clientId: CLIENT_ID,
+          discoveryDocs: [DISCOVERY_DOC],
+          scope: SCOPES,
         })
     })
+}
 
-    if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
-        console.log("SIGNED IN")
-        //makeApiCall();
-      } else {
-        console.log("NOT SIGNED IN")
+function initGisClient() {
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID,
+    scope: SCOPES,
+    callback: (tokenResponse) => {
+      console.log("Encoded JWT ID token: " + tokenResponse.credential)
+      /*
+      if (tokenResponse && tokenResponse.access_token) {
+        
+
+        if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
+          console.log("SIGNED IN")
+          //makeApiCall();
+        } else {
+          console.log("NOT SIGNED IN")
+        }
+        
+        gapi.client.load("calendar", "v3", listUpcomingEvents)
       }
       */
+    },
+  })
 }
 
 function dropdown() {

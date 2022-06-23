@@ -54,6 +54,7 @@
                     data-size="large" 
                     data-logo_alignment="left">
                 </div>
+                <button onclick="client.requestAccessToken();">Authorize me</button>
             </div>
         </div>
         <div class="step">
@@ -80,9 +81,9 @@
         <p>Copyright © inc sst 2022</p>
         <a href="privacy-policy.pdf" target="_blank">Privacy policy</a>
     </footer>
-        <script src="https://accounts.google.com/gsi/client" onload="initClient()" async defer></script>
-        <script src="https://apis.google.com/js/api.js" async defer></script>
         <script src="auth.js" type="module"></script>
+        <script src="https://apis.google.com/js/api.js" onload="initGapiClient()" async defer></script>
+        <script src="https://accounts.google.com/gsi/client" onload="initGisClient()" async defer></script>
     </body>
 
     </html>
