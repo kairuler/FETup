@@ -141,8 +141,8 @@ footer,
 
 .introduction button:hover,
 .setup button:hover {
-    background-color: white;
-    color: #1F2937;
+    background-color: #3c4043;
+    color: white;
 }
 
 footer {
