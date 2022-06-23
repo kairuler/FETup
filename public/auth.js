@@ -227,4 +227,8 @@ if (document.getElementById('setup-page')) {
     verifybtn.addEventListener("click", verifyemail)
     //registerGooglebtn.addEventListener("click", registerGoogle)
     dropdown()
+    window.onload = () => {
+        initGapiClient()
+        initGisClient();
+    }
 }
