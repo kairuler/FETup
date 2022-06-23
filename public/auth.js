@@ -151,8 +151,8 @@ const CLIENT_ID = "374767743519-h4du4gkhivmltj0ho79ijdfeom4lh1ug.apps.googleuser
 const API_KEY = "AIzaSyCOWAZ2lwY3DHoBntVJPKAYoRAlW9-s75E"
 const DISCOVERY_DOC = "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"
 const SCOPES = "https://www.googleapis.com/auth/calendar.events.readonly"; //multiple scopes can be included, separated by spaces.
-var tokenClient
-var access_token
+var tokenClient;
+var access_token;
 
 function initGapiClient() {
     //gapi.load("client:auth2", () => {
@@ -174,6 +174,7 @@ function initGisClient() {
     scope: SCOPES,
     callback: (tokenResponse) => {
       console.log("Encoded JWT ID token: " + tokenResponse.credential)
+      access_token = tokenResponse.access_token
       /*
       if (tokenResponse && tokenResponse.access_token) {
         
@@ -190,6 +191,14 @@ function initGisClient() {
       */
     },
   })
+}
+
+function getToken() {
+  if (tokenClient) {
+    tokenClient.requestAccessToken()
+  } else {
+    console.log("no tokenClient")
+  }
 }
 
 function dropdown() {
@@ -228,6 +237,7 @@ if (document.getElementById('login-page')) {
 if (document.getElementById('setup-page')) {
     logoutbtn.addEventListener("click", logout)
     verifybtn.addEventListener("click", verifyemail)
+    newtokenbtn.addEventListener("click", getToken)
     //registerGooglebtn.addEventListener("click", registerGoogle)
     dropdown()
     window.onload = () => {
