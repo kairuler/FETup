@@ -223,6 +223,8 @@ if (document.getElementById('login-page')) {
   registerbtn.addEventListener("click", register)
 }
 if (document.getElementById('setup-page')) {
+    initGisClient()
+    initGisClient()
     logoutbtn.addEventListener("click", logout)
     verifybtn.addEventListener("click", verifyemail)
     //registerGooglebtn.addEventListener("click", registerGoogle)
