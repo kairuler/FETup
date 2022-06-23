@@ -38,7 +38,23 @@
             <h2>Step 2</h2>
             <div class="step-content">
                 <p>Link your google account to authorise FETUp to write reminders to your Google Calendar.</p>
-                <button id="registerGooglebtn">Sign in with Google</button>
+                <!-- <button id="registerGooglebtn">Sign in with Google</button> -->
+                <div id="g_id_onload" 
+                    data-client_id="374767743519-h4du4gkhivmltj0ho79ijdfeom4lh1ug.apps.googleusercontent.com"
+                    data-context="signin" 
+                    data-ux_mode="popup" 
+                    data-login_uri="/setup.html" 
+                    data-auto_prompt="false">
+                </div>
+                
+                <div class="g_id_signin" 
+                    data-type="standard" 
+                    data-shape="pill" 
+                    data-theme="filled_black" 
+                    data-text="signin"
+                    data-size="large" 
+                    data-logo_alignment="left">
+                </div>
             </div>
         </div>
         <div class="step">
@@ -54,7 +70,7 @@
                             <a id="option_4">4</a>
                         </span>
                     </span>
-                    of days before class.
+                    day(s) before class.
                 </p>
                 <button>Finish!</button>
             </div>
@@ -63,12 +79,13 @@
 
     <footer>
         <p>Copyright © inc sst 2022</p>
-        <a href="/FETup/privacy-policy.pdf" target="_blank">Privacy policy</a>
+        <a href="privacy-policy.pdf" target="_blank">Privacy policy</a>
     </footer>
+        <script src="https://accounts.google.com/gsi/client" async defer></script>
+        <script src="https://apis.google.com/js/api.js" async defer></script>
+        <script src="auth.js" type="module"></script>
+    </body>
 
-    <script src="auth.js" type="module"></script>
-</body>
-
-</html>
+    </html>
 
 </html>

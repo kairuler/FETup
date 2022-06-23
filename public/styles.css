@@ -335,7 +335,8 @@ span.psw {
     margin: 2% 10%;
 }
 
-.step-content button {
+.step-content button,
+.g_id_signin {
     margin: 3% 0 0 auto;
     max-height: 50px;
     font-size: small;

@@ -8,9 +8,7 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
-  sendEmailVerification,
-  GoogleAuthProvider,
-  signInWithRedirect,
+  sendEmailVerification
 } from "https://www.gstatic.com/firebasejs/9.8.3/firebase-auth.js"
 import {
   getDatabase,
@@ -39,13 +37,12 @@ const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 const database = getDatabase(app)
 
-// Google auth provider + OAuth 2.0 scopes
-const provider = new GoogleAuthProvider()
-provider.addScope('https://www.googleapis.com/auth/calendar')
-provider.addScope('https://www.googleapis.com/auth/calendar.events')
-provider.addScope('https://www.googleapis.com/auth/calendar.events.readonly')
-provider.addScope('https://www.googleapis.com/auth/calendar.readonly')
-provider.addScope('https://www.googleapis.com/auth/calendar.settings.readonly')
+// TODO: incrementally add scopes as required
+//provider.addScope('https://www.googleapis.com/auth/calendar')
+//provider.addScope('https://www.googleapis.com/auth/calendar.events')
+//provider.addScope('https://www.googleapis.com/auth/calendar.events.readonly')
+//provider.addScope('https://www.googleapis.com/auth/calendar.readonly')
+//provider.addScope('https://www.googleapis.com/auth/calendar.settings.readonly')
 
 const loginRedirect = async () => {
   const user = auth.currentUser
@@ -149,18 +146,38 @@ const verifyemail = async () => {
   }
 }
 
+// Google API integration
+function initClient(token, user) {
+    gapi.load("client:auth2", () => {
+        console.log("loaded client")
+
+        gapi.client.init({
+        apiKey: "AIzaSyCOWAZ2lwY3DHoBntVJPKAYoRAlW9-s75E",
+        clientId: "374767743519-h4du4gkhivmltj0ho79ijdfeom4lh1ug.apps.googleusercontent.com",
+        discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"],
+        scope: "https://www.googleapis.com/auth/calendar.events.readonly",
+        })
+    })
+
+    if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
+        console.log("SIGNED IN")
+        //makeApiCall();
+      } else {
+        console.log("NOT SIGNED IN")
+      }
+}
+
 const registerGoogle = async () => {
   const user = auth.currentUser
   if (user) {
-    signInWithRedirect(auth, provider)
-    getRedirectResult(auth)
+    signInWithPopup(auth, provider)
       .then((result) => {
         // This gives you a Google Access Token. You can use it to access the Google API.
         const credential = GoogleAuthProvider.credentialFromResult(result)
         const token = credential.accessToken
         // The signed-in user info.
         const user = result.user
-        // ...
+        initClient(token, user)
       })
       .catch((error) => {
         const errorCode = error.code
@@ -213,8 +230,6 @@ if (document.getElementById('login-page')) {
 if (document.getElementById('setup-page')) {
     logoutbtn.addEventListener("click", logout)
     verifybtn.addEventListener("click", verifyemail)
-    registerGooglebtn.addEventListener("click", registerGoogle)
+    //registerGooglebtn.addEventListener("click", registerGoogle)
     dropdown()
 }
-
-
