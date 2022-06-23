@@ -21,7 +21,7 @@
             <a href="#home" class="link">Find FET</a>
             <a href="#home" class="link">Profile</a>
             <a href="#home" class="link">About</a>
-            <a id="logoutbtn" class="logout-btn"">Sign Out</a>
+            <a id="logoutbtn" class="logout-btn g_id_signout"">Sign Out</a>
         </div>
     </div>
 
@@ -38,7 +38,6 @@
             <h2>Step 2</h2>
             <div class="step-content">
                 <p>Link your google account to authorise FETUp to write reminders to your Google Calendar.</p>
-                <!-- <button id="registerGooglebtn">Sign in with Google</button> -->
                 <div id="g_id_onload" 
                     data-client_id="374767743519-h4du4gkhivmltj0ho79ijdfeom4lh1ug.apps.googleusercontent.com"
                     data-context="signin" 
@@ -81,7 +80,7 @@
         <p>Copyright © inc sst 2022</p>
         <a href="privacy-policy.pdf" target="_blank">Privacy policy</a>
     </footer>
-        <script src="https://accounts.google.com/gsi/client" async defer></script>
+        <script src="https://accounts.google.com/gsi/client" onload="initClient()" async defer></script>
         <script src="https://apis.google.com/js/api.js" async defer></script>
         <script src="auth.js" type="module"></script>
     </body>

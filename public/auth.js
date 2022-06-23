@@ -147,7 +147,17 @@ const verifyemail = async () => {
 }
 
 // Google API integration
-function initClient(token, user) {
+function initClient() {
+    const client = google.accounts.oauth2.initTokenClient({
+        client_id: '374767743519-h4du4gkhivmltj0ho79ijdfeom4lh1ug.apps.googleusercontent.com',
+        scope: 'https://www.googleapis.com/auth/calendar.events.readonly',
+        callback: (response) => {
+          console.log("Encoded JWT ID token: " + response.credential)
+        },
+    });
+
+
+    /*
     gapi.load("client:auth2", () => {
         console.log("loaded client")
 
@@ -165,33 +175,7 @@ function initClient(token, user) {
       } else {
         console.log("NOT SIGNED IN")
       }
-}
-
-const registerGoogle = async () => {
-  const user = auth.currentUser
-  if (user) {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        const credential = GoogleAuthProvider.credentialFromResult(result)
-        const token = credential.accessToken
-        // The signed-in user info.
-        const user = result.user
-        initClient(token, user)
-      })
-      .catch((error) => {
-        const errorCode = error.code
-        const errorMessage = error.message
-        const email = error.customData.email // The email of the user's account used.
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error)
-        alert(
-          credential + "\n" + email + "\n" + errorCode + ": " + errorMessage
-        )
-      })
-  } else {
-    alert("Log in required")
-  }
+      */
 }
 
 function dropdown() {
