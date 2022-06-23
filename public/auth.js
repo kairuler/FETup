@@ -151,18 +151,21 @@ const CLIENT_ID = "374767743519-h4du4gkhivmltj0ho79ijdfeom4lh1ug.apps.googleuser
 const API_KEY = "AIzaSyCOWAZ2lwY3DHoBntVJPKAYoRAlW9-s75E"
 const DISCOVERY_DOC = "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"
 const SCOPES = "https://www.googleapis.com/auth/calendar.events.readonly"; //multiple scopes can be included, separated by spaces.
+var tokenClient
+var access_token
 
 function initGapiClient() {
     //gapi.load("client:auth2", () => {
     gapi.load("client", () => {   
-        console.log("loaded client")
         gapi.client.init({
           apiKey: API_KEY,
           clientId: CLIENT_ID,
           discoveryDocs: [DISCOVERY_DOC],
           scope: SCOPES,
+          plugin_name:'FETup',
         })
     })
+    console.log("loaded Gapi client")
 }
 
 function initGisClient() {
