@@ -38,23 +38,7 @@
             <h2>Step 2</h2>
             <div class="step-content">
                 <p>Link your google account to authorise FETUp to write reminders to your Google Calendar.</p>
-                <div id="g_id_onload" 
-                    data-client_id="374767743519-h4du4gkhivmltj0ho79ijdfeom4lh1ug.apps.googleusercontent.com"
-                    data-context="signin" 
-                    data-ux_mode="popup" 
-                    data-login_uri="https://fetup-orbital-22--pr1-firebase-hosting-mff85t8i.web.app/setup.html" 
-                    data-auto_prompt="false">
-                </div>
-                
-                <div class="g_id_signin" 
-                    data-type="standard" 
-                    data-shape="pill" 
-                    data-theme="filled_black" 
-                    data-text="signin"
-                    data-size="large" 
-                    data-logo_alignment="left">
-                </div>
-                <button id="newtokenbtn">Authorize me</button>
+                <button id="googleLoginbtn">Google Login</button>
             </div>
         </div>
         <div class="step">
@@ -72,10 +56,12 @@
                     </span>
                     day(s) before class.
                 </p>
-                <button>Finish!</button>
+                <button id="showEventsBtn">Finish!</button>
             </div>
         </div>
     </div>
+
+    <pre id="output"></pre>
 
     <footer>
         <p>Copyright © inc sst 2022</p>

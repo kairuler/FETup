@@ -1,7 +1,4 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.3/firebase-app.js"
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -18,8 +15,6 @@ import {
   update,
 } from "https://www.gstatic.com/firebasejs/9.8.3/firebase-database.js"
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyAMB7e7AbpWsBndOHJ_qel6oOwnfZPhMlE",
   authDomain: "fetup-orbital-22.firebaseapp.com",
@@ -36,13 +31,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 const database = getDatabase(app)
-
-// TODO: incrementally add scopes as required
-//provider.addScope('https://www.googleapis.com/auth/calendar')
-//provider.addScope('https://www.googleapis.com/auth/calendar.events')
-//provider.addScope('https://www.googleapis.com/auth/calendar.events.readonly')
-//provider.addScope('https://www.googleapis.com/auth/calendar.readonly')
-//provider.addScope('https://www.googleapis.com/auth/calendar.settings.readonly')
 
 const loginRedirect = async () => {
   const user = auth.currentUser
@@ -150,18 +138,15 @@ const verifyemail = async () => {
 const CLIENT_ID = "374767743519-h4du4gkhivmltj0ho79ijdfeom4lh1ug.apps.googleusercontent.com"
 const API_KEY = "AIzaSyCOWAZ2lwY3DHoBntVJPKAYoRAlW9-s75E"
 const DISCOVERY_DOC = "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"
-const SCOPES = "https://www.googleapis.com/auth/calendar.events.readonly"; //multiple scopes can be included, separated by spaces.
-var tokenClient;
-var access_token;
+const SCOPES = "https://www.googleapis.com/auth/calendar" //multiple scopes can be included, separated by spaces.
+var tokenClient
 
 function initGapiClient() {
     //gapi.load("client:auth2", () => {
     gapi.load("client", () => {   
         gapi.client.init({
           apiKey: API_KEY,
-          clientId: CLIENT_ID,
           discoveryDocs: [DISCOVERY_DOC],
-          scope: SCOPES,
           plugin_name:'FETup',
         })
     })
@@ -172,34 +157,139 @@ function initGisClient() {
   tokenClient = google.accounts.oauth2.initTokenClient({
     client_id: CLIENT_ID,
     scope: SCOPES,
+    prompt: '', // prevents login prompt after user has already logged in and authorised
     callback: (tokenResponse) => {
-      console.log("Encoded JWT ID token: " + tokenResponse.credential)
-      access_token = tokenResponse.access_token
-      /*
-      if (tokenResponse && tokenResponse.access_token) {
-        
-
-        if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
-          console.log("SIGNED IN")
-          //makeApiCall();
-        } else {
-          console.log("NOT SIGNED IN")
-        }
-        
-        gapi.client.load("calendar", "v3", listUpcomingEvents)
-      }
-      */
+        access_token = tokenResponse.access_token
+        loadCalendarApi()
     },
+  })
+  console.log("loaded Gis client")
+}
+
+function googleLogin() {
+  const user = auth.currentUser
+  if (user && user.emailVerified) {
+    // Conditionally ask users to select the Google Account they'd like to use,
+    // and explicitly obtain their consent to fetch their Calendar.
+    // NOTE: To request an access token a user gesture is necessary.
+    if (gapi.client.getToken() === null) {
+      // Prompt the user to select an Google Account and asked for consent to share their data
+      // when establishing a new session.
+      console.log("new token w new acc")
+      tokenClient.requestAccessToken({ prompt: "consent" })
+    } else {
+      // Skip display of account chooser and consent dialog for an existing session.
+      console.log("new token w current acc")
+      tokenClient.requestAccessToken({ prompt: "" })
+    }
+  } else if (user && user.emailVerified == false) {
+    alert("email is not verified")
+  } else {
+    alert("no user logged in currently")
+  }
+}
+
+/**
+   * Load Google Calendar client library. List upcoming events
+   * once client library is loaded.
+   */
+function loadCalendarApi() {
+    gapi.client.load("calendar", "v3", listUpcomingEvents)
+}
+
+async function fetchAsync(url) {
+  let obj = null
+  try {
+    obj = await (await fetch(url)).json()
+  } catch (e) {
+    console.log("error in HTTP GET request")
+  }
+  return obj
+}
+
+/**
+ * Print the summary and start datetime/date of the next ten events in
+ * the authorized user's calendar. If no events are found an
+ * appropriate message is printed.
+ */
+function listUpcomingEvents() {
+  var request = gapi.client.calendar.events.list({
+    calendarId: "primary" /* Can be 'primary' or a given calendarid */,
+    timeMin: new Date().toISOString(),
+    showDeleted: false,
+    singleEvents: true,
+    maxResults: 10,
+    orderBy: "startTime",
+  })
+
+  // Get the list of class/exam venues to check if the event is an NUS class/exam
+  // using current Semester's (AY22/23 Sem 1) venues
+  var venueList
+  fetchAsync(
+    "https://api.nusmods.com/v2/2022-2023/semesters/1/venues.json"
+  ).then((data) => {
+    venueList = data
+  })
+
+  request.execute(function (resp) {
+    var events = resp.items
+    appendPre("Upcoming events:")
+
+    if (events.length > 0) {
+      for (let i = 0; i < events.length; i++) {
+        // Get start time
+        var when = events[i].start.dateTime
+        if (!when) {
+          when = events[i].start.date
+        }
+        // Get class/exam venue
+        var loc = events[i].location
+        if (loc) {
+          // Filter out physical classes/exams
+          if (!loc.includes("E-Learn") && venueList.includes(loc)) {
+            appendPre(
+              events[i].summary + " - " + events[i].location + " (" + when + ")"
+            )
+          }
+        } else {
+          appendPre(events[i].summary + " - No Location" + " (" + when + ")")
+        }
+      }
+    } else {
+      appendPre("No upcoming events found.")
+    }
   })
 }
 
-function getToken() {
-  if (tokenClient) {
-    tokenClient.requestAccessToken()
-  } else {
-    console.log("no tokenClient")
+/**
+ * Append a pre element to the body containing the given message
+ * as its text node.
+ *
+ * @param {string} message Text to be placed in pre element.
+ */
+function appendPre(message) {
+  var pre = document.getElementById("output")
+  var textContent = document.createTextNode(message + "\n")
+  pre.appendChild(textContent)
+}
+
+function showEvents() {
+    loadCalendarApi()
+    document.getElementById("showEventsBtn").innerText = "Refresh Calendar"
+}
+
+/*
+function revokeToken() {
+  let cred = gapi.client.getToken()
+  if (cred !== null) {
+    google.accounts.oauth2.revoke(cred.access_token, () => {
+      console.log("Revoked: " + cred.access_token)
+    })
+    gapi.client.setToken("")
+    document.getElementById("showEventsBtn").innerText = "Show Calendar"
   }
 }
+*/
 
 function dropdown() {
     function one() { document.getElementById('dropbtn').textContent = '1' }
@@ -237,11 +327,11 @@ if (document.getElementById('login-page')) {
 if (document.getElementById('setup-page')) {
     logoutbtn.addEventListener("click", logout)
     verifybtn.addEventListener("click", verifyemail)
-    newtokenbtn.addEventListener("click", getToken)
-    //registerGooglebtn.addEventListener("click", registerGoogle)
+    googleLoginbtn.addEventListener("click", googleLogin)
+    showEventsBtn.addEventListener("click", showEvents)
     dropdown()
     window.onload = () => {
         initGapiClient()
-        initGisClient();
+        initGisClient()
     }
 }
