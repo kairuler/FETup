@@ -273,7 +273,7 @@ function deleteEvents() {
           console.log("deleteEvents() response: ", resp)
         })
         console.log("deleted: ", events[i].summary)
-        await delay(500)
+        await delay(1000)
       }
     } else {
       console.log("no events deleted")
@@ -292,21 +292,18 @@ function listCalendars() {
   })
 }
 
+var daysBefore
 /**
  * Print the summary and start datetime/date of the next ten events in
  * the authorized user's calendar. If no events are found an
  * appropriate message is printed.
  */
 function listUpcomingEvents() {
-    var now = new Date
-    var oneMonthAfter = addDays(now, 30)
     var request = gapi.client.calendar.events.list({
         calendarId: "primary" /* Can be 'primary' or a given calendarid */,
-        timeMin: now.toISOString(),
-        //timeMax: oneMonthAfter.toISOString(),
+        timeMin: new Date().toISOString(),
         showDeleted: false,
         singleEvents: true,
-        //maxResults: 10,
         orderBy: "startTime",
     })
 
@@ -319,11 +316,14 @@ function listUpcomingEvents() {
         venueList = data
     })
 
-    request.execute(async function (resp) {
+    request.execute(async (resp) => {
         var events = resp.items
         appendPre("Upcoming physical classes:")
 
         if (events.length > 0) {
+            let prevEventDate
+            let first = true
+            daysBefore *= -1
             for (let i = 0; i < events.length; i++) {
                 // Get start time
                 var when = events[i].start.dateTime
@@ -338,8 +338,17 @@ function listUpcomingEvents() {
                         appendPre(
                             events[i].summary + " - " + events[i].location + " (" + when + ")"
                         )
-                        //insertEvent(events[i].start.dateTime, -1)
-                        //await delay(1000)
+                        if (first) {
+                            insertEvent(events[i].start.dateTime, daysBefore)
+                            prevEventDate = events[i].start.dateTime.substring(0, 10)
+                            first = false
+                            await delay(1000)
+                        }
+                        else if (events[i].start.dateTime.substring(0, 10) != prevEventDate) {
+                            insertEvent(events[i].start.dateTime, daysBefore)
+                            prevEventDate = events[i].start.dateTime.substring(0, 10)
+                            await delay(1000)
+                        }
                     }
                 }
             }
@@ -348,7 +357,7 @@ function listUpcomingEvents() {
         }
     })
   // Testing deleting FET reminder events
-  deleteEvents()
+  //deleteEvents()
 }
 
 // Delay function
@@ -367,8 +376,12 @@ function appendPre(message) {
 }
 
 function showEvents() {
-  loadCalendarApi()
-  document.getElementById("showEventsBtn").innerText = "Refresh Calendar"
+    if (typeof daysBefore === 'undefined' || daysBefore === null) {
+        alert("Please select a number of days")
+        return
+    }
+    loadCalendarApi()
+    document.getElementById("showEventsBtn").innerText = "Refresh Calendar"
 }
 
 /*
@@ -387,15 +400,19 @@ function revokeToken() {
 function dropdown() {
   function one() {
     document.getElementById("dropbtn").textContent = "1"
+    daysBefore = 1
   }
   function two() {
     document.getElementById("dropbtn").textContent = "2"
+    daysBefore = 2
   }
   function three() {
     document.getElementById("dropbtn").textContent = "3"
+    daysBefore = 3
   }
   function four() {
     document.getElementById("dropbtn").textContent = "4"
+    daysBefore = 4
   }
   option_1.addEventListener("click", one)
   option_2.addEventListener("click", two)
