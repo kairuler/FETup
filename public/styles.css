@@ -1,4 +1,4 @@
-/* HOME PAGE */
+/* =============== HOME PAGE ===============*/
 
 html,
 body {
@@ -8,6 +8,7 @@ body {
     padding: 0px;
     overflow-x: hidden;
     background-color: whitesmoke;
+    height: 100vh;
 }
 
 body {
@@ -29,6 +30,7 @@ footer,
 .header {
     display: flex;
     margin-top: 1%;
+    padding: 0 1vw;
 }
 
 #options {
@@ -112,7 +114,7 @@ footer,
 
 .introductionbox {
     flex: 0.5 0 0%;
-    padding: 5em 30px;
+    padding: 1vh 2vw;
 }
 
 #intro-big-text {
@@ -125,11 +127,12 @@ footer,
 }
 
 .introduction button,
-.setup button {
+.setup button,
+.profile button {
     background-color: black;
     border: 1px solid white;
     color: white;
-    padding: 1.1em 5em;
+    padding: 1% 5%;
     margin-top: 5%;
 
     text-align: center;
@@ -140,7 +143,8 @@ footer,
 }
 
 .introduction button:hover,
-.setup button:hover {
+.setup button:hover,
+#showEventsBtn:hover{
     background-color: #3c4043;
     color: white;
 }
@@ -353,9 +357,9 @@ span.psw {
 
 /* Dropdown menu */
 .dropdown .dropbtn {
-    background-color: dimgray;
+    background-color: silver;
     color: white;
-    padding: 10px 20px;
+    padding: 1vh 1vw;
     font-size: 16px;
     border-radius: 20px;
     cursor: pointer;
@@ -390,4 +394,34 @@ span.psw {
 }
 .dropdown:hover .dropbtn {
     background-color: lightgray;
+}
+
+/* =============== PROFILE PAGE ===============*/
+.profile {
+    display: flex;
+    padding: 1vw;
+    background-color: white;
+    margin: 0.5% 1%;
+    height: 100vh;
+}
+.profile h1 {
+    color: darkgray;
+}
+.calendar-container {
+    width: 70%;
+    border: 3px solid whitesmoke;
+    overflow: auto;
+    padding: 1%;
+    margin: 1%;
+}
+.settings-container {
+    width: 30%;
+    margin: 1%;
+}
+#showEventsBtn {
+    display: block;
+    padding: 1vh 1vw;
+    margin: 0 0 0 auto;
+    background-color: black;
+    width: 30%;
 }

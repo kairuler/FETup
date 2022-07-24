@@ -459,3 +459,6 @@ if (document.getElementById("setup-page")) {
     initGisClient()
   }
 }
+if (document.getElementById("profile-page")) {
+    logoutbtn.addEventListener("click", logout)
+  }

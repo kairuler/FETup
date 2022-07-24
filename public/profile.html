@@ -9,10 +9,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
-    <title>About</title>
+    <title>Profile</title>
 </head>
 
-<body id="about-page">
+<body id="profile-page">
     <div class="header">
         <p id="logo"><a href="index.html">FETup</a></p>
         <div id="empty"></div>
@@ -24,7 +24,29 @@
         </div>
     </div>
 
-    
+    <div class="profile">
+        <div class="calendar-container">
+            <p>FETUp will send a reminder 3 days before any physical lesson</p>
+        </div>
+        <div class="settings-container">
+            <h1>Settings</h1>
+            <p>My timetable has changed.</p>
+            <button id="showEventsBtn">Update Reminders</button>
+            <p>I wish to be reminded
+                <span class="dropdown">
+                    <button id="dropbtn" class="dropbtn">_</button>
+                    <span class="dropdown-content">
+                        <a id="option_1">1</a>
+                        <a id="option_2">2</a>
+                        <a id="option_3">3</a>
+                        <a id="option_4">4</a>
+                    </span>
+                </span>
+                day(s) before class.
+            </p>
+            <button id="showEventsBtn">Update</button>
+        </div>
+    </div>
 
     <footer>
         <p>Copyright © inc sst 2022</p>
