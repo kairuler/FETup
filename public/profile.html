@@ -18,7 +18,7 @@
         <div id="empty"></div>
         <div id="options">
             <a href="/index.html" class="link">Home</a>
-            <a href="/profile.html" class="link">Profile</a>
+            <a id="profilebtn" class="link">Profile</a>
             <a href="/about.html" class="link">About</a>
             <a id="logoutbtn" class="logout-btn g_id_signout"">Sign Out</a>
         </div>
@@ -30,11 +30,14 @@
         </div>
         <div class="settings-container">
             <h1>Settings</h1>
-            <p>My timetable has changed.</p>
-            <button id="showEventsBtn">Update Reminders</button>
+            <p>Make sure to login your google account first!</p>
+            <div id="googleLoginbox">
+                <button id="googleLoginbtn">Google Login</button>
+            </div>
+            <p>If your timetable has changed OR you would like to change the number of days before each physical class/exam that each reminder is set, please click on update.</p>
             <p>I wish to be reminded
                 <span class="dropdown">
-                    <button id="dropbtn" class="dropbtn">_</button>
+                    <button id="dropbtn" class="dropbtn"></button>
                     <span class="dropdown-content">
                         <a id="option_1">1</a>
                         <a id="option_2">2</a>
@@ -44,7 +47,10 @@
                 </span>
                 day(s) before class.
             </p>
-            <button id="showEventsBtn">Update</button>
+            <button id="updateEventsBtn">Update</button>
+            <p>I wish to delete all FET reminders.</p>
+            <button id="deleteEventsBtn">Delete</button>
+            <p><small><i>(Please wait a few minutes for changes to take effect)</i></small></p>
         </div>
     </div>
 

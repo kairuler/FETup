@@ -56,6 +56,7 @@ footer,
 .link:hover,
 .logout-btn:hover {
     color: grey;
+    cursor: pointer;
 }
 
 .link::before {
@@ -70,6 +71,7 @@ footer,
 }
 
 .logout-btn {
+    display: none;
     padding: 0.5em 1em;
     color: black;
     font-size: 15px;
@@ -144,7 +146,7 @@ footer,
 
 .introduction button:hover,
 .setup button:hover,
-#showEventsBtn:hover{
+#updateEventsBtn:hover{
     background-color: #3c4043;
     color: white;
 }
@@ -327,7 +329,7 @@ span.psw {
 
 /* =============== SETUP PAGE ===============*/
 .setup {
-    height: 80%;
+    height: 100%;
     display: flex;
     flex-direction: column;
 }
@@ -418,10 +420,20 @@ span.psw {
     width: 30%;
     margin: 1%;
 }
-#showEventsBtn {
+#updateEventsBtn,
+#deleteEventsBtn {
     display: block;
     padding: 1vh 1vw;
     margin: 0 0 0 auto;
     background-color: black;
     width: 30%;
+}
+#googleLoginbox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.profile #googleLoginbtn {
+    padding: 2vh 2vw;
+    width: 100%
 }

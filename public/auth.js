@@ -1,3 +1,5 @@
+// ================= FIREBASE CONFIG =================
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.3/firebase-app.js"
 import {
   getAuth,
@@ -13,6 +15,7 @@ import {
   ref,
   onValue,
   update,
+  get,
 } from "https://www.gstatic.com/firebasejs/9.8.3/firebase-database.js"
 
 const firebaseConfig = {
@@ -31,6 +34,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 const database = getDatabase(app)
+
+
+// ================= SETUP/LOGIN/LOGOUT FUNCTIONS =================
 
 const loginRedirect = async () => {
   const user = auth.currentUser
@@ -87,7 +93,7 @@ const login = async () => {
       })
         .then(() => {
           // Data saved successfully!
-          location.href = "/setup.html"
+          location.href = "/profile.html"
         })
         .catch((error) => {
           alert(error)
@@ -104,6 +110,7 @@ const logout = async () => {
       .then(() => {
         // Sign-out successful.
         alert("user logged out successfully")
+        location.href = "/index.html"
       })
       .catch((error) => {
         alert(error.Code)
@@ -134,25 +141,31 @@ const verifyemail = async () => {
   }
 }
 
-// Google API integration
-const CLIENT_ID =
-  "374767743519-h4du4gkhivmltj0ho79ijdfeom4lh1ug.apps.googleusercontent.com"
-const API_KEY = "AIzaSyCOWAZ2lwY3DHoBntVJPKAYoRAlW9-s75E"
-const DISCOVERY_DOC =
-  "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"
-const SCOPES = "https://www.googleapis.com/auth/calendar" //multiple scopes can be included, separated by spaces.
-var tokenClient
+
+// ================= GAPI/GIS FUNCTIONS =================
+
+var { API_KEY, DISCOVERY_DOC, tokenClient, CLIENT_ID, SCOPES } = googleConfig()
+
+function googleConfig() {
+    const CLIENT_ID = "374767743519-h4du4gkhivmltj0ho79ijdfeom4lh1ug.apps.googleusercontent.com"
+    const API_KEY = "AIzaSyCOWAZ2lwY3DHoBntVJPKAYoRAlW9-s75E"
+    const DISCOVERY_DOC = "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"
+    const SCOPES = "https://www.googleapis.com/auth/calendar" //multiple scopes can be included, separated by spaces.
+    var tokenClient
+    return { API_KEY, DISCOVERY_DOC, tokenClient, CLIENT_ID, SCOPES }
+}
 
 function initGapiClient() {
-  //gapi.load("client:auth2", () => {
+
   gapi.load("client", () => {
     gapi.client.init({
       apiKey: API_KEY,
       discoveryDocs: [DISCOVERY_DOC],
       plugin_name: "FETup",
+    }).then(() => {
+        console.log("loaded Gapi client")
     })
   })
-  console.log("loaded Gapi client")
 }
 
 function initGisClient() {
@@ -162,43 +175,42 @@ function initGisClient() {
     prompt: "", // prevents login prompt after user has already logged in and authorised
     callback: (tokenResponse) => {
       access_token = tokenResponse.access_token
-      loadCalendarApi()
+      //loadCalendarApi()
+      
     },
   })
   console.log("loaded Gis client")
 }
 
 function googleLogin() {
-  const user = auth.currentUser
-  if (user && user.emailVerified) {
-    // Conditionally ask users to select the Google Account they'd like to use,
-    // and explicitly obtain their consent to fetch their Calendar.
-    // NOTE: To request an access token a user gesture is necessary.
-    if (gapi.client.getToken() === null) {
-      // Prompt the user to select an Google Account and asked for consent to share their data
-      // when establishing a new session.
-      console.log("new token w new acc")
-      tokenClient.requestAccessToken({ prompt: "consent" })
-    } else {
-      // Skip display of account chooser and consent dialog for an existing session.
-      console.log("new token w current acc")
-      tokenClient.requestAccessToken({ prompt: "" })
-    }
-  } else if (user && user.emailVerified == false) {
-    alert("email is not verified")
-  } else {
-    alert("no user logged in currently")
-  }
+    const user = auth.currentUser
+    return new Promise((resolve, reject) => {
+        if (user && user.emailVerified) {
+            // Conditionally ask users to select the Google Account they'd like to use,
+            // and explicitly obtain their consent to fetch their Calendar.
+            // NOTE: To request an access token a user gesture is necessary.
+            if (gapi.client.getToken() === null) {
+                // Prompt the user to select an Google Account and asked for consent to share their data
+                // when establishing a new session.
+                tokenClient.requestAccessToken({ prompt: "consent" })
+                resolve("new token w new acc")
+            } else {
+                // Skip display of account chooser and consent dialog for an existing session.
+                tokenClient.requestAccessToken({ prompt: "" })
+                resolve("new token w current acc")
+            }
+        } else if (user && user.emailVerified == false) {
+            alert("email is not verified")
+            reject("email is not verified")
+        } else {
+            alert("no user logged in currently")
+            reject("no user logged in currently")
+        }
+    })
 }
 
-/**
- * Load Google Calendar client library. List upcoming events
- * once client library is loaded.
- */
-function loadCalendarApi() {
-  gapi.client.load("calendar", "v3", listUpcomingEvents)
-  //gapi.client.load("calendar", "v3", listCalendars)
-}
+
+// ================= CALENDAR API FUNCTIONS =================
 
 async function fetchAsync(url) {
   let obj = null
@@ -253,52 +265,50 @@ function addDays(date, days) {
 }
 
 function deleteEvents() {
-  var request = gapi.client.calendar.events.list({
-    calendarId: "primary",
-    timeMin: new Date().toISOString(),
-    showDeleted: false,
-    singleEvents: true,
-    q: "FET Reminder",
-  })
+    var request = gapi.client.calendar.events.list({
+        calendarId: "primary",
+        timeMin: new Date().toISOString(),
+        showDeleted: false,
+        singleEvents: true,
+        q: "FET Reminder",
+    })
 
-  request.execute(async function (resp) {
-    var events = resp.items
-    if (events.length > 0) {
-      for (let i = 0; i < events.length; i++) {
-        var request2 = gapi.client.calendar.events.delete({
-          calendarId: "primary",
-          eventId: events[i].id,
-        })
-        request2.execute(function (resp) {
-          console.log("deleteEvents() response: ", resp)
-        })
-        console.log("deleted: ", events[i].summary)
-        await delay(1000)
-      }
-    } else {
-      console.log("no events deleted")
-    }
-  })
-}
-
-function listCalendars() {
-  var request = gapi.client.calendar.calendarList.get({
-    calendarId: "primary" /* Can be 'primary' or a given calendarid */,
-  })
-
-  request.execute(function (resp) {
-    var calendar = resp
-    console.log(calendar)
-  })
+    return new Promise(resolve => request.execute(async function (resp) {
+        var events = resp.items
+        if (events.length > 0) {
+            for (let i = 0; i < events.length; i++) {
+                var request2 = gapi.client.calendar.events.delete({
+                    calendarId: "primary",
+                    eventId: events[i].id,
+                })
+                request2.execute(function (resp) {
+                    console.log("deleteEvents() response: ", resp)
+                })
+                console.log("deleted: ", events[i].summary)
+                await delay(1000)
+            }
+        } else {
+            console.log("no events deleted")
+        }
+        resolve("Event deletion Completed")
+    }))
 }
 
 var daysBefore
+async function newReminders() {
+    if (typeof daysBefore === 'undefined' || daysBefore === null) {
+        alert("Please select a number of days")
+        return
+    }
+    setReminders(daysBefore)
+}
+
 /**
  * Print the summary and start datetime/date of the next ten events in
  * the authorized user's calendar. If no events are found an
  * appropriate message is printed.
  */
-function listUpcomingEvents() {
+async function setReminders(ndays) {
     var request = gapi.client.calendar.events.list({
         calendarId: "primary" /* Can be 'primary' or a given calendarid */,
         timeMin: new Date().toISOString(),
@@ -318,12 +328,11 @@ function listUpcomingEvents() {
 
     request.execute(async (resp) => {
         var events = resp.items
-        appendPre("Upcoming physical classes:")
 
         if (events.length > 0) {
             let prevEventDate
             let first = true
-            daysBefore *= -1
+            ndays *= -1
             for (let i = 0; i < events.length; i++) {
                 // Get start time
                 var when = events[i].start.dateTime
@@ -331,71 +340,45 @@ function listUpcomingEvents() {
                     when = events[i].start.date
                 }
                 // Get class/exam venue
-                var loc = events[i].location
+                var loc = events[i].location    
                 if (loc) {
                     // Filter out physical classes/exams
                     if (!loc.includes("E-Learn") && venueList.includes(loc)) {
-                        appendPre(
-                            events[i].summary + " - " + events[i].location + " (" + when + ")"
-                        )
                         if (first) {
-                            insertEvent(events[i].start.dateTime, daysBefore)
+                            insertEvent(events[i].start.dateTime, ndays)
                             prevEventDate = events[i].start.dateTime.substring(0, 10)
                             first = false
                             await delay(1000)
                         }
                         else if (events[i].start.dateTime.substring(0, 10) != prevEventDate) {
-                            insertEvent(events[i].start.dateTime, daysBefore)
+                            insertEvent(events[i].start.dateTime, ndays)
                             prevEventDate = events[i].start.dateTime.substring(0, 10)
                             await delay(1000)
                         }
                     }
                 }
-            }
+            }    
         } else {
-            appendPre("No upcoming events found.")
+            console.log("no upcoming events found")
         }
     })
-  // Testing deleting FET reminder events
-  //deleteEvents()
+
+    const user = auth.currentUser
+    update(ref(database, 'users/' + user.uid), { days: ndays })
+        .then(() => {
+            console.log("days updated successfully")
+        })
+        .catch((error) => {
+            alert(error)
+        })
 }
 
-// Delay function
-const delay = ms => new Promise(res => setTimeout(res, ms))
-
-/**
- * Append a pre element to the body containing the given message
- * as its text node.
- *
- * @param {string} message Text to be placed in pre element.
- */
-function appendPre(message) {
-  var pre = document.getElementById("output")
-  var textContent = document.createTextNode(message + "\n")
-  pre.appendChild(textContent)
+async function updateEvents() {
+    await deleteEvents()
+    setReminders(daysBefore)
 }
 
-function showEvents() {
-    if (typeof daysBefore === 'undefined' || daysBefore === null) {
-        alert("Please select a number of days")
-        return
-    }
-    loadCalendarApi()
-    document.getElementById("showEventsBtn").innerText = "Refresh Calendar"
-}
-
-/*
-function revokeToken() {
-  let cred = gapi.client.getToken()
-  if (cred !== null) {
-    google.accounts.oauth2.revoke(cred.access_token, () => {
-      console.log("Revoked: " + cred.access_token)
-    })
-    gapi.client.setToken("")
-    document.getElementById("showEventsBtn").innerText = "Show Calendar"
-  }
-}
-*/
+// ================= AUXILIARY FUNCTIONS =================
 
 function dropdown() {
   function one() {
@@ -420,40 +403,65 @@ function dropdown() {
   option_4.addEventListener("click", four)
 }
 
-// Call Auth functions based on current page
-if (document.getElementById("home-page")) {
-  logoutbtn.addEventListener("click", logout)
-  setupbtn.addEventListener("click", loginRedirect)
+function welcomeMessage(userId) {
+    return onValue(
+        ref(database, "/users/" + userId), (snapshot) => {
+            const full_name = (snapshot.val() && snapshot.val().full_name) || "Anonymous"
+            document.getElementById("intro-big-text").textContent =
+                "WELCOME, " + full_name + "!"
+        }, {
+            onlyOnce: true,
+        })
+}
 
-  // Welcome message with User's name
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      const userId = user.uid
-      return onValue(
-        ref(database, "/users/" + userId),
-        (snapshot) => {
-          const full_name =
-            (snapshot.val() && snapshot.val().full_name) || "Anonymous"
-          document.getElementById("intro-big-text").textContent =
-            "WELCOME, " + full_name + "!"
-        },
-        {
-          onlyOnce: true,
+function siteNavigation() {
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User is logged in
+            document.getElementById("logoutbtn").style.display = "block"
+            document.getElementById("profilebtn").onclick = () => location.href = "/profile.html"
         }
-      )
-    }
-  })
+        else {
+            // User is logged out
+            document.getElementById("logoutbtn").style.display = "none"
+            document.getElementById("profilebtn").onclick = () => location.href = "/login.html"
+        }
+    })
+}
+
+const delay = ms => new Promise(res => setTimeout(res, ms))
+
+// Call functions based on current page
+if (document.getElementById("home-page")) {
+    logoutbtn.addEventListener("click", logout)
+    setupbtn.addEventListener("click", loginRedirect)
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User is logged in
+            document.getElementById("logoutbtn").style.display = "block"
+            document.getElementById("profilebtn").onclick = () => location.href = "/profile.html"
+            return welcomeMessage(user.uid)
+        }
+        else {
+            // User is logged out
+            document.getElementById("logoutbtn").style.display = "none"
+            document.getElementById("intro-big-text").textContent = "WELCOME"
+            document.getElementById("profilebtn").onclick = () => location.href = "/login.html"
+        }
+    })
 }
 if (document.getElementById("login-page")) {
-  loginbtn.addEventListener("click", login)
-  registerbtn.addEventListener("click", register)
+    loginbtn.addEventListener("click", login)
+    registerbtn.addEventListener("click", register)
 }
 if (document.getElementById("setup-page")) {
   logoutbtn.addEventListener("click", logout)
   verifybtn.addEventListener("click", verifyemail)
   googleLoginbtn.addEventListener("click", googleLogin)
-  showEventsBtn.addEventListener("click", showEvents)
+  newRemindersBtn.addEventListener("click", newReminders)
   dropdown()
+  siteNavigation()
   window.onload = () => {
     initGapiClient()
     initGisClient()
@@ -461,4 +469,22 @@ if (document.getElementById("setup-page")) {
 }
 if (document.getElementById("profile-page")) {
     logoutbtn.addEventListener("click", logout)
-  }
+    updateEventsBtn.addEventListener("click", updateEvents)
+    googleLoginbtn.addEventListener("click", googleLogin)
+    deleteEventsBtn.addEventListener("click", deleteEvents)
+    dropdown()
+    siteNavigation()
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            onValue(ref(database, "/users/" + user.uid), (snapshot) => {
+                const data = snapshot.val()
+                daysBefore = data.days
+                document.getElementById("dropbtn").textContent = daysBefore
+              }) 
+        }
+    })
+    window.onload = () => {
+        initGapiClient()
+        initGisClient()
+    }
+}
